@@ -1,0 +1,25 @@
+webcam:
+  camera:
+    ros__parameters:
+      backlight_compensation: 0
+      brightness: 128
+      camera_frame_id: camera
+      contrast: 5
+      exposure_absolute: 336
+      exposure_auto: 3
+      exposure_auto_priority: true
+      gain: 192
+      gamma: 100
+      hue: 0
+      image_size:
+      - 800
+      - 640
+      output_encoding: rgb8
+      pixel_format: YUYV
+      power_line_frequency: 2
+      saturation: 32
+      sharpness: 24
+      use_sim_time: true
+      video_device: /dev/video0
+      white_balance_temperature: 4500
+      white_balance_temperature_auto: true
