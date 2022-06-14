@@ -1,11 +1,14 @@
 import os
 import launch
 from launch_ros.actions import Node
-from launch_ros.actions import ComposableNodeContainer
-from launch_ros.descriptions import ComposableNode
 import launch.actions
 import launch.substitutions
 import launch_ros.actions
+from launch.substitutions import LaunchConfiguration
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch.substitutions import TextSubstitution
+from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
@@ -19,9 +22,8 @@ def generate_launch_description():
         namespace='',
         executable='space_watch',
         name='manual',
-        remappings=[
-            ('image_raw', 'webcam/image_raw')
-        ]   
+        parameters=[{
+            "change_theshold": 0.9}]   
     )
 
     rqt_image_view_node = Node(
@@ -42,4 +44,5 @@ def generate_launch_description():
     )
 
     #return launch.LaunchDescription([container, rqt_image_view_node, camera_node])
-    return launch.LaunchDescription([manual_node, camera_node])
+    #return launch.LaunchDescription([manual_node, camera_node])
+    return launch.LaunchDescription([manual_node])

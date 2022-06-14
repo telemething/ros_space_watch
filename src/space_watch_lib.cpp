@@ -6,9 +6,19 @@
 namespace space_watch
 {
 
+void space_watch_lib::read_params()
+{
+    this->declare_parameter("change_theshold", 0.94);
+    rclcpp::Parameter change_threshold_param;
+    this->get_parameter("change_theshold", change_threshold_param);
+    change_threshold = change_threshold_param.as_double();
+}
+
 space_watch_lib::space_watch_lib(const NodeOptions& options)
 :   Node("space_watch_lib", options)
 {
+    read_params();
+
     on_shutdown([&]
     {
         space_watch_lib::shutdown_callback();
@@ -24,8 +34,8 @@ space_watch_lib::space_watch_lib(const NodeOptions& options)
         std::bind(&space_watch_lib::image_callback, this, _1),
         "raw", rmw_qos_profile_sensor_data);
 
-    //m_scan_result_pub = this->create_publisher<barcode_msgs::msg::ScanResult>("barcodes",
-    //    QoS(10));
+    m_space_change_pub = this->create_publisher<std_msgs::msg::Float32>("space_changed",
+        QoS(10));
 }
 
 cv::Scalar space_watch_lib::getMSSIM( const cv::Mat& i1, const cv::Mat& i2)
@@ -86,30 +96,45 @@ double space_watch_lib::getPSNR(const cv::Mat& I1, const cv::Mat& I2)
 
 void space_watch_lib::image_callback(const sensor_msgs::msg::Image::ConstSharedPtr& image_msg)
 {
-    //****************************
+    double psnr = 0;
+
+    // throttle block begin
     const auto & now = this->now();
 
     if (last_time_ > now) 
-    {
-      //RCLCPP_WARN(
-      //  get_logger(), "Detected jump back in time, resetting throttle period to now for.");
       last_time_ = now;
-    }
 
-    if ((now - last_time_).nanoseconds() >= period_.count()) 
-    {
-      //pub_->publish(*msg);
-      last_time_ = now;
-    }
-    else 
-    {
-      return;
-    }
+    if ((now - last_time_).nanoseconds() < period_.count()) 
+        return;
 
-    //****************************
+    last_time_ = now;
+    // throttle block end
 
     const cv::Mat cv_image = cv_bridge::toCvShare(image_msg, sensor_msgs::image_encodings::MONO8)->image;
 
+    //cv::Mat resized;
+    //cv::resize(cv_image, resized, cv::Size(300, 200), cv::INTER_LINEAR);
+
+    if(cv_image_previous.empty())
+    {
+        cv_image_previous = cv_image.clone();
+        return;
+    }
+
+    cv::Scalar ssim = getMSSIM(cv_image, cv_image_previous);
+
+    printf("SSIM: %f - %f - %f - %f\n", ssim.val[0], ssim.val[1], ssim.val[2], ssim.val[4]);
+
+    if(change_threshold > ssim.val[0])
+    {
+        printf("--- CHANGE: %f ---\n", ssim.val[0]);
+        auto msg = std_msgs::msg::Float32();
+        msg.data = ssim.val[0];
+        m_space_change_pub->publish(msg);
+    }
+
+    //psnr = getPSNR(cv_image, cv_image_previous);
+    //printf("PSNR: %f\n", psnr);
 
 } // space_watch_lib::image_callback()
 

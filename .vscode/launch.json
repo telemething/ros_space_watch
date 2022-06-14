@@ -1,0 +1,16 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ROS: Launch",
+            "request": "launch",
+            "target": "/media/mark/Data/U22/ros2_ws/install/space_watch/share/space_watch/launch/watch_space.launch.py",
+            "launch": ["rviz","v4l2_camera_node"],
+            "type": "ros",
+            "preLaunchTask": "colcon build debug"
+        }
+    ]
+}

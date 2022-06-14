@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "colcon build debug",
+            "type": "shell",
+            "command": "colcon",
+            "args": [
+                "--log-base", 
+                "/media/mark/Data/U22/ros2_ws/log",
+                "build",
+                "--build-base",
+                "/media/mark/Data/U22/ros2_ws/build",
+                "--install-base",
+                "/media/mark/Data/U22/ros2_ws/install",
+                "--cmake-args",
+                "-DCMAKE_BUILD_TYPE=Debug"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

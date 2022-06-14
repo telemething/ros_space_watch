@@ -51,22 +51,18 @@ endif()
 add_executable(space_watch
   src/space_watch.cpp)
 target_link_libraries(space_watch
-space_watch_lib)
+  space_watch_lib)
 ament_target_dependencies(space_watch
-  rclcpp
-  rclcpp_components
-  cv_bridge
-  image_transport
-  OpenCV)
+  "rclcpp" )
 
-set(libs
-space_watch_lib)
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(libs
-    "-Wl,--no-as-needed"
-    ${libs}
-    "-Wl,--as-needed")
-endif()
+#set(libs
+#space_watch_lib)
+#if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+#  set(libs
+#    "-Wl,--no-as-needed"
+#    ${libs}
+#    "-Wl,--as-needed")
+#endif()
 
 install(TARGETS
 space_watch_lib
