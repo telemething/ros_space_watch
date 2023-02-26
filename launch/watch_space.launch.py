@@ -23,7 +23,7 @@ def generate_launch_description():
         executable='space_watch',
         name='manual',
         parameters=[{
-            "change_theshold": 0.9}]   
+            "change_theshold": 0.86}]   
     )
 
     rqt_image_view_node = Node(
