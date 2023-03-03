@@ -16,6 +16,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(serial_driver REQUIRED)
 
 find_package(cv_bridge REQUIRED)
 find_package(image_transport REQUIRED)
@@ -38,6 +39,7 @@ ament_target_dependencies(space_watch_lib
   rclcpp_components
   cv_bridge
   image_transport
+  serial_driver
   OpenCV)
 rclcpp_components_register_nodes(space_watch_lib "space_watch::space_watch_lib")
 
@@ -49,7 +51,7 @@ if(NOT WIN32)
 endif()
 
 add_executable(space_watch
-  src/space_watch.cpp)
+  src/space_watch.cpp src/ceSerial.cpp)
 target_link_libraries(space_watch
   space_watch_lib)
 ament_target_dependencies(space_watch

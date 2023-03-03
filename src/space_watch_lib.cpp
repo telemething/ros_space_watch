@@ -3,8 +3,42 @@
 #include <functional>
 #include "cv_bridge/cv_bridge.h"
 
+#include "ceSerial.h"
+using namespace std;
+using namespace ce;
+
+ceSerial *com;
+
 namespace space_watch
 {
+
+void InitSerial()
+{
+    com = new ceSerial("/dev/ttyACM0",9600,8,'N',1); // Linux
+
+    printf("Opening port %s.\n",com->GetPort().c_str());
+
+	if (com->Open() == 0) 
+    {
+		printf("Port OK.\n");
+	}
+	else 
+    {
+		printf("Port Error.\n");
+    }
+}
+
+void WriteSerialData(std::string prefix, double data)
+{
+    printf("--- write to serial ---\n");
+    char buffer[256];
+    sprintf(buffer,"%s:%f", prefix.c_str(), data);
+    
+    if(com->Write(buffer))
+        printf("--- write ok ---\n");
+    else
+        printf("--- write failed ---\n");
+}
 
 void space_watch_lib::read_params()
 {
@@ -18,6 +52,8 @@ space_watch_lib::space_watch_lib(const NodeOptions& options)
 :   Node("space_watch_lib", options)
 {
     read_params();
+
+    InitSerial();
 
     on_shutdown([&]
     {
@@ -131,6 +167,9 @@ void space_watch_lib::image_callback(const sensor_msgs::msg::Image::ConstSharedP
         auto msg = std_msgs::msg::Float32();
         msg.data = ssim.val[0];
         m_space_change_pub->publish(msg);
+
+        //if(com->IsOpened())
+            WriteSerialData("spacechange",ssim.val[0]);
     }
 
     //psnr = getPSNR(cv_image, cv_image_previous);
